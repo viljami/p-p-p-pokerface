@@ -9,45 +9,56 @@
 
 (defn suit [[_ snd]] (str snd))
 
-(defn amounts [hand] (vals (frequencies (map rank hand))))
-(defn highest [hand] (apply max (amounts hand)))
+(defn amounts [hand what] (vals (frequencies (map what hand))))
+(defn highest [hand what] (apply max (amounts hand what)))
 (defn pair? [hand]
-  (== 2 (highest hand)))
+  (== 2 (highest hand rank)))
 
 (def pair-hand ["2H" "2S" "4C" "5C" "7D"])
 
 (defn three-of-a-kind? [hand]
-  (== 3 (highest hand)))
+  (== 3 (highest hand rank)))
 
 (defn four-of-a-kind? [hand]
-  (== 4 (highest hand)))
+  (== 4 (highest hand rank)))
 
 (defn flush? [hand]
-  nil)
+  (== 5 (highest hand suit)))
 
 (defn full-house? [hand]
-  nil)
+  (let [sortedResult (sort (amounts hand rank))]
+    (= sortedResult (range (first sortedResult) (+ 2 (first sortedResult))))))
 
 (defn two-pairs? [hand]
-  nil)
+   (== 2 (last (sort (vals (frequencies (amounts hand rank)))))))
 
 (defn straight? [hand]
-  nil)
+  (let [ranks (sort (map rank hand))]
+    (= ranks (range (first ranks) (+ 5 (first ranks))))))
 
 (defn straight-flush? [hand]
-  nil)
+  (and (straight? hand) (flush? hand)))
+
+(defn high-card? [hand]
+  (apply max (map rank hand)))
+
+(def checkers #{[high-card? 0]  [pair? 1]
+                 [two-pairs? 2]  [three-of-a-kind? 3]
+                 [straight? 4]   [flush? 5]
+                 [full-house? 6] [four-of-a-kind? 7]
+                 [straight-flush? 8]})
+
+(def simpless #{[high-card? 0] [pair? 1] [two-pairs? 2]})
 
 (defn value [hand]
-  nil)
+  (apply max (map second
+              (filter (fn [keyValue] ((first keyValue) hand)) checkers))))
 
 
 (def high-seven                   ["2H" "3S" "4C" "5C" "7D"])
-
-
 (def two-pairs-hand               ["2H" "2S" "4C" "4D" "7D"])
 (def three-of-a-kind-hand         ["2H" "2S" "2C" "4D" "7D"])
 (def four-of-a-kind-hand          ["2H" "2S" "2C" "2D" "7D"])
-
 (def straight-hand                ["2H" "3S" "6C" "5D" "4D"])
 (def low-ace-straight-hand        ["2H" "3S" "4C" "5D" "AD"])
 (def high-ace-straight-hand       ["TH" "AS" "QC" "KD" "JD"])
