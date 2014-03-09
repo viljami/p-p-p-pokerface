@@ -11,19 +11,15 @@
 
 (defn amounts [hand what] (vals (frequencies (map what hand))))
 (defn highest [hand what] (apply max (amounts hand what)))
-(defn pair? [hand]
-  (== 2 (highest hand rank)))
+(defn pair? [hand] (== 2 (highest hand rank)))
 
 (def pair-hand ["2H" "2S" "4C" "5C" "7D"])
 
-(defn three-of-a-kind? [hand]
-  (== 3 (highest hand rank)))
+(defn three-of-a-kind? [hand] (== 3 (highest hand rank)))
 
-(defn four-of-a-kind? [hand]
-  (== 4 (highest hand rank)))
+(defn four-of-a-kind? [hand] (== 4 (highest hand rank)))
 
-(defn flush? [hand]
-  (== 5 (highest hand suit)))
+(defn flush? [hand] (== 5 (highest hand suit)))
 
 (defn full-house? [hand]
   (let [sortedResult (sort (amounts hand rank))]
